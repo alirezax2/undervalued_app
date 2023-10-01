@@ -2,16 +2,17 @@ import pandas as pd
 import yfinance as yf
 import panel as pn
 
-def get_df(ticker, startdate , enddate , interval="1d"):
+@pn.cache
+def get_df(ticker, startdate , enddate , interval="1d",window=50):
     # interval="1d"
     # get_df(ticker ="PG", startdate="2000-01-01" , enddate="2023-09-01" , interval="1d")
     DF = yf.Ticker(ticker).history(start=startdate,end=enddate,interval=interval)
-    DF['SMA50'] = DF.Close.rolling(window=50).mean()
+    DF['SMA'] = DF.Close.rolling(window=window).mean()
     DF = DF.reset_index()
     return DF 
 
-def get_hvplot(ticker , startdate , enddate , interval):
-    DF = get_df(ticker , startdate=startdate , enddate=enddate , interval=interval)
+def get_hvplot(ticker , startdate , enddate , interval,window):
+    DF = get_df(ticker , startdate=startdate , enddate=enddate , interval=interval,window=window)
 
     import hvplot.pandas  # Ensure hvplot is installed (pip install hvplot)
     from sklearn.linear_model import LinearRegression
@@ -34,8 +35,9 @@ def get_hvplot(ticker , startdate , enddate , interval):
 
     # # Step 4: Create a line plot for linear regression
     line_plot = DF.hvplot(x='Date', y='Predicted_Close', kind='line',line_dash='dashed', color='red')
+    line_plot_SMA = DF.hvplot(x='Date', y='SMA', kind='line',line_dash='dashed', color='orange')
 
     # # Step 5: Overlay scatter plot and linear regression line
     # return (scatter_plot * line_plot).opts(width=800, height=600, show_grid=True, gridstyle={ 'grid_line_color': 'gray'})
     # grid_style = {'grid_line_color': 'black'}#, 'grid_line_width': 1.5, 'ygrid_bounds': (0.3, 0.7),'minor_xgrid_line_color': 'lightgray', 'xgrid_line_dash': [4, 4]}
-    return (scatter_plot * line_plot).opts(width=800, height=600, show_grid=True)
+    return (scatter_plot * line_plot *line_plot_SMA).opts(width=800, height=600, show_grid=True)
