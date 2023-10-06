@@ -11,6 +11,22 @@ def get_df(ticker, startdate , enddate , interval="1d",window=50):
     DF = DF.reset_index()
     return DF 
 
+def get_income_statement_df(ticker):
+    yfobj = yf.Ticker(ticker)
+    df= yfobj.financials.T
+    df.index = pd.to_datetime(df.index, format='%Y-%m-%d')
+    return df
+
+def get_income_hvplot(ticker):
+    DF = get_income_statement_df(ticker)
+    plt1 = DF.hvplot.line(y='Total Revenue') * DF.hvplot.scatter(y='Total Revenue').opts(color="red") 
+    plt1.opts(width=600, height=450, show_grid=True)
+    plt2 = DF.hvplot.line(y='Gross Profit') * DF.hvplot.scatter(y='Gross Profit').opts(color="red") 
+    plt2.opts(width=600, height=450, show_grid=True)
+    plt3 = DF.hvplot.line(y='Net Income') * DF.hvplot.scatter(y='Net Income').opts(color="red")
+    plt3.opts(width=600, height=450, show_grid=True)
+    return pn.Column(plt1 , plt2 , plt3 )
+
 def get_hvplot(ticker , startdate , enddate , interval,window):
     DF = get_df(ticker , startdate=startdate , enddate=enddate , interval=interval,window=window)
 

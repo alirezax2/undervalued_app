@@ -1,5 +1,5 @@
 
-from utils import get_df,get_hvplot
+from utils import get_df,get_hvplot,get_income_hvplot
 import pandas as pd
 import panel as pn
 from datetime import datetime
@@ -34,7 +34,8 @@ date_end.value = date.today()
 pn.Row(
     pn.Column( ticker, window , date_start , date_end),
     # pn.panel(pn.bind(get_hvplot, ticker, "2010-01-01","2023-09-01","1d")) #, sizing_mode='stretch_width')
-    pn.panel(pn.bind(get_hvplot, ticker, date_start , date_end,"1d",window)) #, sizing_mode='stretch_width')
+    pn.panel(pn.bind(get_hvplot, ticker, date_start , date_end,"1d",window)),
+    pn.panel(pn.bind(get_income_hvplot, ticker))    #, sizing_mode='stretch_width')
 ).servable(title="Under Valued Screener- Linear Regression")
 
 
